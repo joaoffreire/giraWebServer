@@ -1,0 +1,272 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>IDMind Webdev</title>
+  <meta name="description" content="IDMind Webdev.">
+  <meta name="author" content="SitePoint">
+
+  <meta property="og:title" content="IDMind Webdev">
+  <meta property="og:type" content="website">
+  <meta property="og:description" content="IDMind Webdev App">
+
+  <link rel="icon" href="/favicon.ico">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+  <style>
+        .header {
+            position: fixed;
+            left: 0;
+            top: 0;
+            right: 0;
+            height: 10%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: rgb(43, 43, 43);;
+            color: white;
+            box-sizing: border-box;
+        }
+
+        .header button {
+            margin: 0;
+        }
+
+        .view {
+            padding: 25px;
+            position: fixed;
+            left: 0;
+            top: 10%;
+            right: 0;
+            height: 90%;
+            background-color: rgb(56, 56, 56);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: start;
+            align-items: stretch;
+        }
+
+        .view button {
+            margin: 1vw;
+        }
+
+        button {
+            padding: 10px;
+        }
+
+        button:active {
+            opacity: 0.7;
+        }
+
+        .card2 {
+            border-radius: 4px;
+            border: 1px solid white;
+            padding: 15px;
+        }
+
+        .bordered {
+            border-radius: 4px;
+            border: 2px solid gold;
+            background-color: rgba(0, 0, 0, 0);
+            color: gold;
+            font-weight: bold;
+        }
+
+        .unbordered {
+            border: none;
+            background-color: rgba(0, 0, 0, 0);
+            color: gold;
+            font-weight: bold;
+        }
+
+        .contained {
+            border-radius: 4px;
+            border: 4px solid gold;
+            background-color: gold;
+            color: black;
+            font-weight: bold;
+        }
+
+        .wide {
+            min-width: 100%;
+        }
+
+        p {
+            margin: 3vh;
+            color: white;
+            font-weight: bold;
+        }
+
+        pre {
+            margin: 1vh;
+            color: white;
+            font-weight: bold;
+        }
+
+  </style>
+
+</head>
+
+<body>
+    <div class="main" >
+        <div class="header shadow" >
+            <p>IDMind Gira</p>
+            <div>
+                <button id="btn_turnon" class="unbordered" >TURN ON</button>
+                <button id="btn_shutdown" class="unbordered" >SHUTDOWN</button>
+                <button id="btn_debug" class="unbordered" >DEBUG</button>
+                <button id="btn_reprogram" class="unbordered" >REPROGRAM</button>
+            </div>
+        </div>
+        <div class="view" >
+            <button id="btn_lock" class="bordered" >LOCK</button>
+            <button id="btn_unlock" class="bordered" >UNLOCK</button>
+            <button id="btn_buzz" class="bordered" >BUZZ</button>
+            <p >GPS DATA</p>
+            <pre id="text_gps" >WAITING FOR DATA</pre>
+        </div>
+    </div>
+  <script >
+        const lock_url = window.location.href + "api/lock";
+        const unlock_url = window.location.href + "api/unlock";
+        const buzz_url = window.location.href + "api/buzz";
+        const shutdown_url = window.location.href + "api/shutdown";
+        const turnon_url = window.location.href + "api/turnon";
+        const debug_url = window.location.href + "api/debug";
+        const reprogram_url = window.location.href + "api/reprogram";
+
+        const gps_url = window.location.href + "api/gps";
+        const btn_lock = document.getElementById("btn_lock");
+        const btn_unlock = document.getElementById("btn_unlock");
+        const btn_buzz = document.getElementById("btn_buzz");
+        const btn_shutdown = document.getElementById("btn_shutdown");
+        const btn_turnon = document.getElementById("btn_turnon");
+        const btn_debug = document.getElementById("btn_debug");
+        const btn_reprogram = document.getElementById("btn_reprogram");
+        const text_gps = document.getElementById("text_gps");
+
+        window.setInterval(() => {
+            var xhr = new XMLHttpRequest();
+            var url = gps_url + "?data=" + encodeURIComponent(JSON.stringify({}));
+            xhr.open("GET", url, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var json = JSON.parse(xhr.responseText);
+                    text_gps.textContent = JSON.stringify(json, undefined, 2);
+                    console.log(json);
+                }
+            };
+            xhr.send();
+
+        }, 1000)
+
+        btn_lock.onclick = evt => {
+            var xhr = new XMLHttpRequest();
+            var url = lock_url + "?data=" + encodeURIComponent(JSON.stringify({}));
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var json = JSON.parse(xhr.responseText);
+                    console.log(json);
+                }
+            };
+            xhr.send();
+        }
+
+        btn_unlock.onclick = evt => {
+            var xhr = new XMLHttpRequest();
+            var url = unlock_url + "?data=" + encodeURIComponent(JSON.stringify({}));
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var json = JSON.parse(xhr.responseText);
+                    console.log(json);
+                }
+            };
+            xhr.send();
+        }
+
+        btn_buzz.onclick = evt => {
+            var xhr = new XMLHttpRequest();
+            var url = buzz_url + "?data=" + encodeURIComponent(JSON.stringify({}));
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var json = JSON.parse(xhr.responseText);
+                    console.log(json);
+                }
+            };
+            xhr.send();
+        }
+
+        btn_shutdown.onclick = evt => {
+            var xhr = new XMLHttpRequest();
+            var url = shutdown_url + "?data=" + encodeURIComponent(JSON.stringify({}));
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var json = JSON.parse(xhr.responseText);
+                    console.log(json);
+                }
+            };
+            xhr.send();
+        }
+
+        btn_turnon.onclick = evt => {
+            var xhr = new XMLHttpRequest();
+            var url = turnon_url + "?data=" + encodeURIComponent(JSON.stringify({}));
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var json = JSON.parse(xhr.responseText);
+                    console.log(json);
+                }
+            };
+            xhr.send();
+        }
+
+        btn_debug.onclick = evt => {
+            var xhr = new XMLHttpRequest();
+            var url = debug_url + "?data=" + encodeURIComponent(JSON.stringify({}));
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var json = JSON.parse(xhr.responseText);
+                    console.log(json);
+                }
+            };
+            xhr.send();
+        }
+
+        btn_reprogram.onclick = evt => {
+            var xhr = new XMLHttpRequest();
+            var url = reprogram_url + "?data=" + encodeURIComponent(JSON.stringify({}));
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var json = JSON.parse(xhr.responseText);
+                    console.log(json);
+                }
+            };
+            xhr.send();
+        }
+
+  </script>
+</body>
+</html>
